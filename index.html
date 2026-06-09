@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>龍田佳尚 | Portfolio</title>
+<!-- ▼ SNSや検索結果に出る説明文。必要なら書き換え -->
+<meta name="description" content="龍田佳尚 ポートフォリオ — ロボティクス × UI/UX" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400&family=JetBrains+Mono:wght@400;500&family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+  :root{
+    --ink:        #0b0d11;
+    --ink-2:      #12151c;
+    --ink-3:      #181c25;
+    --cream:      #ece6da;
+    --cream-dim:  #948f85;
+    --ember:      #ff5333;
+    --line:       rgba(236,230,218,0.12);
+    --line-soft:  rgba(236,230,218,0.06);
+    --maxw:       1180px;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--ink);
+    color:var(--cream);
+    font-family:"Zen Kaku Gothic New","Archivo",system-ui,sans-serif;
+    font-weight:400;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* film grain overlay */
+  body::after{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none; z-index:9999;
+    opacity:.04; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection{ background:var(--ember); color:var(--ink); }
+
+  a{ color:inherit; text-decoration:none; }
+
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.72rem; letter-spacing:.32em; text-transform:uppercase;
+    color:var(--ember); font-weight:500;
+  }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 28px; }
+
+  section{ position:relative; }
+
+  /* ───────── NAV ───────── */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 32px;
+    mix-blend-mode:difference;
+  }
+  nav .mark{ font-family:"Fraunces",serif; font-size:1.1rem; letter-spacing:.04em; }
+  nav .links{ display:flex; gap:26px; font-family:"JetBrains Mono",monospace; font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; }
+  nav .links a{ opacity:.8; transition:opacity .25s; }
+  nav .links a:hover{ opacity:1; }
+  @media(max-width:680px){ nav .links{ display:none; } }
+
+  /* ───────── HERO ───────── */
+  #hero{ height:100svh; min-height:640px; position:relative; display:flex; align-items:flex-end; }
+  #cloud{ position:absolute; inset:0; width:100%; height:100%; z-index:0; }
+  #hero::before{ /* vignette */
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(120% 90% at 70% 30%, transparent 35%, var(--ink) 100%);
+  }
+  .hero-inner{ position:relative; z-index:2; width:100%; padding-bottom:7vh; }
+  .hero-inner .eyebrow{ display:block; margin-bottom:22px; opacity:0; }
+  .hero-name{
+    font-family:"Shippori Mincho",serif; font-weight:700;
+    font-size:clamp(3.4rem,11vw,8.5rem); line-height:.95; letter-spacing:.02em;
+  }
+  .hero-name .en{
+    display:block; font-family:"Fraunces",serif; font-weight:300; font-style:italic;
+    font-size:clamp(1rem,2.4vw,1.6rem); letter-spacing:.18em; color:var(--cream-dim);
+    margin-top:18px; text-transform:uppercase;
+  }
+  .hero-tag{
+    margin-top:34px; max-width:30ch;
+    font-family:"Shippori Mincho",serif; font-weight:500;
+    font-size:clamp(1.05rem,2.3vw,1.5rem); line-height:1.7; color:var(--cream);
+  }
+  .scrollcue{ position:absolute; right:32px; bottom:7vh; z-index:2; font-family:"JetBrains Mono",monospace; font-size:.66rem; letter-spacing:.3em; writing-mode:vertical-rl; color:var(--cream-dim); }
+  .scrollcue::after{ content:""; display:block; width:1px; height:48px; margin:14px auto 0; background:linear-gradient(var(--ember),transparent); animation:cue 2.2s infinite; }
+  @keyframes cue{ 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 50.1%{transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+  /* fade-in helper */
+  [data-reveal]{ opacity:0; transform:translateY(28px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+
+  /* ───────── SECTION HEAD ───────── */
+  .sec-head{ display:flex; align-items:baseline; gap:18px; margin-bottom:54px; }
+  .sec-head .num{ font-family:"JetBrains Mono",monospace; font-size:.8rem; color:var(--ember); }
+  .sec-head h2{ font-family:"Shippori Mincho",serif; font-weight:600; font-size:clamp(1.6rem,4vw,2.6rem); letter-spacing:.04em; }
+  .sec-head .h-en{ font-family:"Fraunces",serif; font-style:italic; font-weight:300; color:var(--cream-dim); font-size:1rem; }
+
+  /* ───────── ABOUT ───────── */
+  #about{ padding:140px 0; border-top:1px solid var(--line-soft); }
+  .about-grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:70px; }
+  @media(max-width:820px){ .about-grid{ grid-template-columns:1fr; gap:50px; } }
+
+  /* 円形アイコン（プロフィール写真など） */
+  .about-icon{
+    width:clamp(140px,22vw,188px);
+    aspect-ratio:1;
+    border-radius:50%;
+    overflow:hidden;
+    position:relative;
+    background:linear-gradient(135deg,var(--ink-2),var(--ink-3));
+    border:1px solid var(--line);
+    /* 内側のink余白 + 外側に細いemberリング */
+    box-shadow:0 0 0 5px var(--ink), 0 0 0 6px rgba(255,83,51,.30);
+    display:flex; align-items:center; justify-content:center;
+    margin:0 0 38px;
+  }
+  .about-icon img{ width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(.18); transition:filter .6s; }
+  .about-icon:hover img{ filter:grayscale(0); }
+  .about-icon .ph{ font-family:"JetBrains Mono",monospace; font-size:.62rem; letter-spacing:.12em; color:var(--cream-dim); text-align:center; padding:0 14px; line-height:1.6; }
+
+  .about-statement{ font-family:"Shippori Mincho",serif; font-weight:500; font-size:clamp(1.3rem,2.8vw,1.85rem); line-height:1.95; }
+  .about-statement .hl{ color:var(--ember); }
+  .about-body{ margin-top:30px; color:var(--cream-dim); font-size:.98rem; max-width:46ch; }
+  .timeline{ border-left:1px solid var(--line); padding-left:26px; }
+  .timeline .t-label{ font-family:"JetBrains Mono",monospace; font-size:.7rem; letter-spacing:.2em; color:var(--cream-dim); text-transform:uppercase; margin-bottom:24px; }
+  .t-item{ position:relative; padding-bottom:30px; }
+  .t-item::before{ content:""; position:absolute; left:-31px; top:9px; width:9px; height:9px; border-radius:50%; background:var(--ink); border:1px solid var(--ember); }
+  .t-item .yr{ font-family:"JetBrains Mono",monospace; font-size:.74rem; color:var(--ember); }
+  .t-item .pl{ font-weight:700; margin-top:3px; }
+  .t-item .pd{ color:var(--cream-dim); font-size:.86rem; }
+
+  /* ───────── PROJECTS ───────── */
+  #work{ padding:120px 0; border-top:1px solid var(--line-soft); }
+  .proj{ display:grid; grid-template-columns:1fr 1fr; gap:54px; align-items:center; padding:70px 0; border-top:1px solid var(--line-soft); }
+  .proj:nth-child(even) .proj-media{ order:2; }
+  @media(max-width:860px){ .proj{ grid-template-columns:1fr; gap:30px; } .proj:nth-child(even) .proj-media{ order:0; } }
+  .proj-media{
+    position:relative; aspect-ratio:16/10; border-radius:4px; overflow:hidden;
+    background:linear-gradient(135deg,var(--ink-2),var(--ink-3));
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+  }
+  .proj-media .ph{ font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.16em; color:var(--cream-dim); text-align:center; padding:0 20px; }
+  .proj-media img,.proj-media video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .proj-media::after{ content:""; position:absolute; inset:0; box-shadow:inset 0 0 80px rgba(0,0,0,.5); pointer-events:none; }
+  .proj-idx{ font-family:"Fraunces",serif; font-style:italic; font-size:3rem; line-height:1; color:var(--line); font-weight:400; }
+  .proj h3{ font-family:"Shippori Mincho",serif; font-weight:700; font-size:clamp(1.4rem,3vw,2.05rem); line-height:1.35; margin:14px 0 18px; }
+  .proj-meta{ display:flex; flex-wrap:wrap; gap:10px 22px; font-family:"JetBrains Mono",monospace; font-size:.7rem; letter-spacing:.1em; color:var(--cream-dim); text-transform:uppercase; margin-bottom:22px; }
+  .proj-meta b{ color:var(--ember); font-weight:500; }
+  .proj p.desc{ color:#cfc9bd; font-size:.97rem; }
+  .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+  .tags span{ font-family:"JetBrains Mono",monospace; font-size:.68rem; padding:5px 11px; border:1px solid var(--line); border-radius:100px; color:var(--cream-dim); }
+  .privnote{ margin-top:22px; font-size:.8rem; color:var(--cream-dim); display:flex; align-items:center; gap:9px; }
+  .privnote::before{ content:"🔒"; filter:grayscale(1) opacity(.7); font-size:.85rem; }
+  .links-row{ margin-top:20px; display:flex; gap:18px; }
+  .lk{ font-family:"JetBrains Mono",monospace; font-size:.74rem; letter-spacing:.08em; padding-bottom:3px; border-bottom:1px solid var(--ember); transition:opacity .2s; }
+  .lk:hover{ opacity:.65; }
+
+  /* ───────── SKILLS ───────── */
+  #skills{ padding:130px 0; border-top:1px solid var(--line-soft); }
+  .skill-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:40px 30px; }
+  @media(max-width:820px){ .skill-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:460px){ .skill-grid{ grid-template-columns:1fr; } }
+  .skill-cat .sc-label{ font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--ember); padding-bottom:14px; border-bottom:1px solid var(--line); margin-bottom:18px; }
+  .skill-cat ul{ list-style:none; }
+  .skill-cat li{ font-size:.92rem; color:#d3cdc1; padding:5px 0; }
+
+  /* ───────── HOBBY ───────── */
+  #hobby{ padding:130px 0; border-top:1px solid var(--line-soft); }
+  /* 各サブブロック（写真 / 電子工作） */
+  .hobby-block{ margin-top:96px; }
+  .hobby-block:first-of-type{ margin-top:0; }
+  .hobby-subhead{ display:flex; align-items:center; gap:14px; margin-bottom:34px; padding-bottom:16px; border-bottom:1px solid var(--line-soft); }
+  .hobby-subhead .s-tick{ flex:none; width:8px; height:8px; background:var(--ember); border-radius:1px; }
+  .hobby-subhead .s-jp{ font-family:"Shippori Mincho",serif; font-weight:600; font-size:clamp(1.25rem,2.6vw,1.55rem); letter-spacing:.04em; }
+  .hobby-subhead .s-en{ font-family:"Fraunces",serif; font-style:italic; font-weight:300; color:var(--cream-dim); font-size:.92rem; }
+
+  /* ── 写真グリッド（masonry・トリミングなし） ── */
+  .photo-grid{ display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:8px; gap:14px; }
+  @media(max-width:760px){ .photo-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:460px){ .photo-grid{ grid-template-columns:1fr; } }
+  .photo-grid .cell{ position:relative; overflow:hidden; border-radius:3px; background:linear-gradient(135deg,var(--ink-2),var(--ink-3)); border:1px solid var(--line); }
+  .photo-grid .cell img{ width:100%; height:auto; display:block; }
+  .photo-grid .cell .ph{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:"JetBrains Mono",monospace; font-size:.66rem; letter-spacing:.14em; color:var(--cream-dim); }
+  .photo-grid .cell:first-child{ grid-column:1 / -1; }
+
+  /* ── 電子工作カード ── */
+  .maker-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media(max-width:820px){ .maker-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:540px){ .maker-grid{ grid-template-columns:1fr; } }
+  .maker-card{ display:flex; flex-direction:column; background:var(--ink-2); border:1px solid var(--line); border-radius:5px; overflow:hidden; transition:transform .5s cubic-bezier(.2,.7,.2,1), border-color .4s; }
+  .maker-card:hover{ transform:translateY(-5px); border-color:rgba(255,83,51,.42); }
+  .maker-card .m-media{ position:relative; aspect-ratio:4/3; background:linear-gradient(135deg,var(--ink-2),var(--ink-3)); border-bottom:1px solid var(--line-soft); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .maker-card .m-media img,.maker-card .m-media video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .maker-card .m-media .ph{ font-family:"JetBrains Mono",monospace; font-size:.62rem; letter-spacing:.12em; color:var(--cream-dim); text-align:center; padding:0 16px; line-height:1.6; }
+  .maker-card .m-body{ padding:20px 22px 24px; display:flex; flex-direction:column; flex:1; }
+  .maker-card .m-status{ font-family:"JetBrains Mono",monospace; font-size:.63rem; letter-spacing:.18em; text-transform:uppercase; color:var(--ember); margin-bottom:11px; display:flex; align-items:center; gap:8px; }
+  .maker-card .m-status .dot{ width:6px; height:6px; border-radius:50%; background:var(--ember); }
+  .maker-card h4{ font-family:"Shippori Mincho",serif; font-weight:700; font-size:1.1rem; line-height:1.45; margin-bottom:10px; }
+  .maker-card .m-desc{ color:var(--cream-dim); font-size:.85rem; line-height:1.78; flex:1; }
+  .maker-card .m-tags{ display:flex; flex-wrap:wrap; gap:7px; margin-top:16px; }
+  .maker-card .m-tags span{ font-family:"JetBrains Mono",monospace; font-size:.62rem; padding:4px 9px; border:1px solid var(--line); border-radius:100px; color:var(--cream-dim); }
+  .maker-note{ margin-top:26px; color:var(--cream-dim); font-size:.85rem; }
+
+  /* ───────── CONTACT ───────── */
+  #contact{ padding:150px 0 110px; border-top:1px solid var(--line-soft); }
+  .contact-line{ font-family:"Shippori Mincho",serif; font-weight:600; font-size:clamp(2rem,6vw,4.2rem); line-height:1.3; }
+  .contact-line a{ color:var(--ember); border-bottom:2px solid transparent; transition:border-color .25s; }
+  .contact-line a:hover{ border-color:var(--ember); }
+  .contact-row{ margin-top:48px; display:flex; flex-wrap:wrap; gap:28px; font-family:"JetBrains Mono",monospace; font-size:.8rem; letter-spacing:.08em; }
+  .contact-row a{ color:var(--cream-dim); border-bottom:1px solid var(--line); padding-bottom:4px; transition:color .2s; }
+  .contact-row a:hover{ color:var(--cream); }
+
+  footer{ padding:34px 0; border-top:1px solid var(--line-soft); font-family:"JetBrains Mono",monospace; font-size:.68rem; letter-spacing:.12em; color:var(--cream-dim); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="mark">Y.T</div>
+  <div class="links">
+    <a href="#about">About</a>
+    <a href="#work">Work</a>
+    <a href="#skills">Skills</a>
+    <a href="#hobby">Hobby</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- ════════════ HERO ════════════ -->
+<section id="hero">
+  <canvas id="cloud"></canvas>
+  <div class="wrap hero-inner">
+    <span class="eyebrow" id="hero-eyebrow">Robotics × UI/UX — M1 @ NAIST</span>
+    <h1 class="hero-name">
+      龍田 佳尚
+      <span class="en">Yoshihisa&nbsp;Tatsuta</span>
+    </h1>
+    <p class="hero-tag"></p>
+  </div>
+  <div class="scrollcue">SCROLL</div>
+</section>
+
+<!-- ════════════ ABOUT ════════════ -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="num">01</span>
+      <h2>About</h2>
+      <span class="h-en">— who I am</span>
+    </div>
+    <div class="about-grid">
+      <div data-reveal>
+       
+        <div class="about-icon">
+          <img src="media/DSCF6763.jpg" alt="龍田佳尚">
+        </div>
+        <p class="about-statement">
+        私は技術で<span class="hl">寄り添いたい</span>．
+        </p>
+        <p class="about-body">
+          高専でロボティクスやインタフェース設計などを幅広く学び，技術そのものよりも，それが人の課題をどう解くかに関心を持つようになった．
+          これからは学んできたことを活かし，誰かの悩みを減らし，時には感動を与えるような形に変えていきたい．
+        </p>
+      </div>
+      <div class="timeline" data-reveal>
+        <div class="t-label">Education</div>
+        <div class="t-item">
+          <div class="yr">2026 – 2028</div>
+          <div class="pl">奈良先端科学技術大学院大学 博士前期課程</div>
+          <div class="pd">先端科学技術研究科 先端科学技術専攻 情報科学領域</div>
+        </div>
+        <div class="t-item">
+          <div class="yr">2024 – 2026</div>
+          <div class="pl">大阪公立大学工業高等専門学校 専攻科</div>
+          <div class="pd">機械工学コース</div>
+        </div>
+        <div class="t-item">
+          <div class="yr">2019 – 2024</div>
+          <div class="pl">大阪公立大学工業高等専門学校 本科</div>
+          <div class="pd">メカトロニクスコース</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ WORK ════════════ -->
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="num">02</span>
+      <h2>Selected Work</h2>
+      <span class="h-en">— what I built</span>
+    </div>
+
+    <!-- PROJECT 1 -->
+    <article class="proj" data-reveal>
+      <div class="proj-media">
+        <video src="media/portfolio1_m.mp4" autoplay muted loop playsinline></video>
+      </div>
+      <div>
+        <div class="proj-idx">01</div>
+        <h3>VR遠隔操作支援インターフェース</h3>
+        <div class="proj-meta">
+          <span>Role / <b>個人開発</b></span>
+          <span>Award / <b>高専学会 優秀賞</b></span>
+          <span>2024 – 2025</span>
+        </div>
+        <p class="desc">
+          6脚ロボットと360度カメラとMeta Quest 2を用いて遠隔操作するインターフェースを開発した．
+          さらに，ORB-SLAM3で周囲環境をマッピングし，VR空間内に危険箇所を提示することで，操作者が状況を直感的に把握できるようにした．
+          開発中は映像伝送の遅延が操作感の最大のボトルネックだったため，通信方式・データ量・描画処理を測定しながら段階的に見直し，遅延を約100〜150msから20〜40msへ（約70%）削減した．
+          複数の技術を一つのシステムへ統合する難しさと，課題を段階的に切り分けて解くことの有効性を学んだ．
+        </p>
+        <div class="tags">
+          <span>WebXR</span><span>Three.js</span><span>ORB-SLAM3</span><span>ROS Noetic</span><span>Jetson</span><span>逆運動学</span><span>6脚ロボット</span><span>VR</span><span>Dynamixel</span>
+        </div>
+        <div class="privnote">コードは研究の都合により非公開</div>
+        <div class="links-row">
+          <a class="lk" href="https://www.ct.omu.ac.jp/info/news/entry-91537.html">高専HP ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- PROJECT 2 -->
+    <article class="proj" data-reveal>
+      <div class="proj-media">
+        <video src="media/portfolio2_m.mp4" autoplay muted loop playsinline></video>
+      </div>
+      <div>
+        <div class="proj-idx">02</div>
+        <h3>モバイル端末を用いた公道における点群生成・結合技術の開発と点群地図の作成</h3>
+        <div class="proj-meta">
+          <span>Role / <b>グループ研究・映像処理</b></span>
+          <span>Award / <b>高専学会 優秀賞</b></span>
+          <span>2024 – 2025</span>
+        </div>
+        <p class="desc">
+          360度カメラを搭載したモバイル端末で公道を撮影し，その映像から点群を生成・結合して点群地図をつくる技術に取り組んだ．
+          点群化には各フレームへ正確な位置情報を対応づける必要があるため，360度動画からジオタグ付き画像を自動生成するパイプラインを構築した．
+          土木・電気電子・機械と背景の異なるメンバーが混ざるチームで研究を進めた．
+          それぞれの得意を活かして役割を補い合い，進捗を共有しながら課題に取り組むなかで，専門の違いが視野の広がりに変わる手応えを得た．
+        </p>
+        <div class="tags">
+          <span>Point Cloud</span><span>GoPro</span><span>Metashape</span><span>ffmpeg</span><span>GPMF</span><span>GPX</span>
+        </div>
+        <div class="privnote">コードは研究の都合により非公開</div>
+        <div class="links-row">
+          <a class="lk" href="https://researchmap.jp/imochan55/presentations/51059904">researchmap ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- PROJECT 3 -->
+    <article class="proj" data-reveal>
+      <div class="proj-media">
+        <video src="media/portfolio3.mp4" autoplay muted loop playsinline></video>
+      </div>
+      <div>
+        <div class="proj-idx">03</div>
+        <h3>廃炉創造ロボコン｜6脚ロボット</h3>
+        <div class="proj-meta">
+          <span>Role / <b>グループ開発・制御 </b></span>
+          <span>Award / <b>特別賞</b></span>
+          <span>Team of 4</span>
+        </div>
+        <p class="desc">
+          高専本科時代，福島第一原子力発電所の廃炉作業を想定し，人が立ち入れない環境で動く6脚ロボットの開発にチームで取り組んだ．
+          私はArduinoによるサーボ制御を担当し，脚を動かすだけでなく旋回や姿勢変化まで含めて安定して扱える歩行の実現にこだわった．
+          試作段階では接地の不安定さや旋回時のサーボ負荷が課題となったため，実機での検証を重ね，機構形状と制御パラメータを調整した．
+          本番では摩耗によるサーボのトラブルで課題達成には至らなかったが，この経験から，実環境で生じる負荷や破損まで想定して設計・検証する重要性を学んだ．
+          最終的には，機体の独自性と開発姿勢が評価され，特別賞を受賞した．
+        </p>
+        <div class="tags">
+          <span>シリアルサーボ</span><span>Arduino</span><span>6脚ロボット</span><span>ROS Noetic</span><span>ロボコン</span><span>福島第一原子力発電所</span>
+        </div>
+        <div class="links-row">
+          <a class="lk" href="https://fdecomi.fukushima-nct.ac.jp/">廃炉創造ロボコン ↗</a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ════════════ SKILLS ════════════ -->
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="num">03</span>
+      <h2>Skills</h2>
+      <span class="h-en">— the toolkit</span>
+    </div>
+    <div class="skill-grid" data-reveal>
+      <div class="skill-cat">
+        <div class="sc-label">Languages</div>
+        <ul><li>Python</li><li>C / C++ / C#</li><li>JavaScript</li><li>HTML / CSS</li><li>GLSL</li><li>Swift</li></ul>
+      </div>
+      <div class="skill-cat">
+        <div class="sc-label">Robotics</div>
+        <ul><li>ROS1 / ROS2</li><li>Linux</li><li>Arduino / RaspberryPi / Jetson</li><li>SLAM / V-SLAM</li><li>FK / IK</li><li>Hexapod / Unitree Go2</li></ul>
+      </div>
+      <div class="skill-cat">
+        <div class="sc-label">UI / Web</div>
+        <ul><li>WebXR</li><li>Three.js</li><li>A-Frame</li><li>Node.js</li><li>Flask</li><li>WebSocket</li></ul>
+      </div>
+      <div class="skill-cat">
+        <div class="sc-label">Design / Other</div>
+        <ul><li>Fusion 360</li><li>Blender</li><li>Unity</li><li>MATLAB</li><li>DaVinci Resolve</li><li>Photoshop / Lightroom / Illustrator</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ HOBBY ════════════ -->
+<section id="hobby">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="num">04</span>
+      <h2>Hobby</h2>
+      <span class="h-en">— off the clock</span>
+    </div>
+
+    <!-- ──────── 写真 ──────── -->
+    <div class="hobby-block" data-reveal>
+      <div class="hobby-subhead">
+        <span class="s-tick"></span>
+        <span class="s-jp">写真</span>
+        <span class="s-en">— Photography</span>
+      </div>
+      <div class="photo-grid">
+        <div class="cell c-a"><img src="media/DSC08064-3-1.JPG" alt="photo0"></div>
+        <div class="cell c-a"><img src="media/_DSC5828-2-1.JPG" alt="photo1"></div>
+        <div class="cell c-a"><img src="media/_DSC5979-1.JPG" alt="photo2"></div>
+        <div class="cell c-a"><img src="media/_DSC5639-1-1.JPG" alt="photo3"></div>
+        <div class="cell c-a"><img src="media/_DSC1048-2.jpg" alt="photo4"></div>
+        <div class="cell c-a"><img src="media/DSC09662-2-1.JPG" alt="photo5"></div>
+        <div class="cell c-a"><img src="media/_DSC1310-1.JPG" alt="photo6"></div>
+        <div class="cell c-a"><img src="media/DSC03398-5-1.JPG" alt="photo7"></div>
+        <div class="cell c-a"><img src="media/DSC09192-2-1.JPG" alt="photo8"></div>
+      </div>
+      <p class="photo-note">※掲載の許可を得ています．<br>
+        ・共同個展に出展経験あり(Gallery IYN「何気ない日常vol.3展」(2024/05), 第3回全国学生写真・映像祭(2024/09))<br>
+        ・飲食店の商用撮影経験あり
+      </p>
+    </div>
+
+    <!-- ──────── 電子工作とシステム開発 ──────── -->
+    <div class="hobby-block" data-reveal>
+      <div class="hobby-subhead">
+        <span class="s-tick"></span>
+        <span class="s-jp">電子工作 / システム開発</span>
+        <span class="s-en">— Electronics &amp; Making</span>
+      </div>
+      <div class="maker-grid">
+
+
+        <article class="maker-card">
+          <div class="m-media">
+            <!-- メディアはここ -->
+            <span class="ph">No Image</span>
+          </div>
+          <div class="m-body">
+            <div class="m-status"><span class="dot"></span>完成 2025/05</div>
+            <h4>A-Frameを使った音楽プレイヤー</h4>
+            <p class="m-desc">友達がしているバンドはCDを発売しており，その中にはCD限定の曲が収録されている．
+              しかし，CDプレイヤーがない人は聞くことができない．
+              そこで，CDケースの中に特定の画像を挿入しておき，それをスマホで読み取ることでARで演出して音源再生するシステムを提案した．その際のサンプル．</p>
+            <div class="m-tags">
+              <span>A-Frame</span><span>AR</span>
+            </div>
+            <div class="links-row">
+          <a class="lk" href="https://github.com/yoooch0614/upset.github.io">GitHub ↗</a>
+        </div>
+          </div>
+        </article>
+
+        <article class="maker-card">
+          <div class="m-media">
+            <!-- メディアはここ -->
+            <video src="media/WebApp1.mp4" autoplay muted loop playsinline></video>
+          </div>
+          <div class="m-body">
+            <div class="m-status"><span class="dot"></span>完成 2026/05</div>
+            <h4>スマホ用在高計算webアプリ</h4>
+            <p class="m-desc">バイト先で金庫金を数える時に既存のwebアプリを使っていたが，広告が入る点や500円棒金が50枚の設定になっている点,UIが使いづらい点などがあったため，自分で作った．利用者に感想を聞いたが非常に満足度が高い.</p>
+            <div class="m-tags">
+              <span>GAS</span><span>Web App</span>
+            </div>
+            <div class="links-row">
+          <a class="lk" href="https://github.com/yoooch0614">GitHub ↗</a>
+        </div>
+          </div>
+        </article>
+
+        <article class="maker-card">
+          <div class="m-media">
+            <span class="ph">No Image</span>
+          </div>
+          <div class="m-body">
+            <div class="m-status"><span class="dot"></span>完成 2026/06</div>
+            <h4>MOZA AB9をlinuxで動くようにする</h4>
+            <p class="m-desc">Windowsでしか動かず，2年間文鎮となっていた約10万円のMoza AB9をlinuxで操作できるようする．linuxで使えるようになると研究室の誰かがシェアードコントロールなどの研究に使えるようになる．</p>
+            <div class="m-tags">
+              <span>Moza AB9</span><span>ROS package</span><span>evdev</span><span>Linux</span>
+            </div>
+            <div class="privnote">コードは研究室の都合により非公開</div>
+            <div class="links-row">
+          <a class="lk" href="https://github.com/yoooch0614/moza-ab9-linux">GitHub ↗</a>
+        </div>
+          </div>
+        </article>
+
+        <!-- 
+        <article class="maker-card">
+          <div class="m-media">
+            <span class="ph">No Image</span>
+          </div>
+          <div class="m-body">
+            <div class="m-status"><span class="dot"></span>進行中</div>
+            <h4>ミラーボール付き音楽プレイヤー</h4>
+            <p class="m-desc">私の父が卓上でミラーボールを回して欲しいらしく，どうせなら音楽プレイヤー機能も搭載してみようと思い構想中</p>
+            <div class="m-tags">
+              <span>Arduino</span><span>電子工作</span><span>父の日</span>
+            </div>
+            <div class="links-row">
+          <a class="lk" href="https://github.com/yoooch0614">GitHub ↗</a>
+        </div>
+          </div>
+        </article> -->
+
+        <article class="maker-card">
+          <div class="m-media">
+            <span class="ph">No Image</span>
+          </div>
+          <div class="m-body">
+            <div class="m-status"><span class="dot"></span>進行中</div>
+            <h4>研究室内コンビニのキャッシュレス化</h4>
+            <p class="m-desc">NAISTの研究室内には，イベント係が管理するコンビニがある.
+              しかし，基本少額なので小銭が多くなってしまう問題や現金のみが不便である．
+              そこで，NFCタグを用いて月末に一気に請求する方式に変更しようと考えた．この方法なら在庫管理や支払いをPayPayなどで決済できるようになる．</p>
+            <div class="m-tags">
+              <span>Sony RC-S380</span><span>NFC tag </span><span>SQLite</span>
+            </div>
+            <div class="links-row">
+          <a class="lk" href="https://github.com/yoooch0614">GitHub ↗</a>
+        </div>
+          </div>
+        </article>
+
+
+
+
+          
+      </div>
+      <p class="maker-note">More to come...</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════ CONTACT ════════════ -->
+<section id="contact">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="num">05</span>
+      <h2>Contact</h2>
+      <span class="h-en">— say hello</span>
+    </div>
+    <p class="contact-line" data-reveal>
+      お気軽にご連絡ください。
+    </p>
+    <div class="contact-row" data-reveal>
+      <!-- ▼ メール・リンクを差し替え -->
+      <a href="mailto:tatsuta.yoshihisa.ub2@naist.ac.jp">tatsuta.yoshihisa.ub2@naist.ac.jp</a>
+      <a href="https://github.com/yoooch0614" target="_blank" rel="noopener">GitHub ↗</a>
+      <!-- <a href="#">LinkedIn ↗</a> -->
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <span>© 2026 Yoshihisa Tatsuta</span>
+  <span>Code assisted by Claude · Hosted on GitHub Pages</span>
+</footer>
+
+<script>
+/* ───────── point-cloud hero ───────── */
+(function(){
+  const canvas = document.getElementById('cloud');
+  if(!window.THREE){ return; }
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+  camera.position.z = 16;
+
+  // distribute points over a sphere (fibonacci) + noise -> "scanned" look
+  const COUNT = 2600;
+  const positions = new Float32Array(COUNT * 3);
+  const R = 9;
+  for(let i=0;i<COUNT;i++){
+    const t = i / COUNT;
+    const phi = Math.acos(1 - 2*t);
+    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+    const jitter = 1 + (Math.random()-0.5)*0.18;
+    const r = R * jitter;
+    positions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+    positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta) * 0.78; // slight squash
+    positions[i*3+2] = r * Math.cos(phi);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  const mat = new THREE.PointsMaterial({
+    color: 0xece6da,
+    size: 0.06,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.5,
+    depthWrite: false
+  });
+  const cloud = new THREE.Points(geo, mat);
+  scene.add(cloud);
+
+  // a few ember accent points
+  const accGeo = new THREE.BufferGeometry();
+  const accPos = new Float32Array(30*3);
+  for(let i=0;i<30;i++){
+    const idx = Math.floor(Math.random()*COUNT);
+    accPos[i*3]=positions[idx*3]; accPos[i*3+1]=positions[idx*3+1]; accPos[i*3+2]=positions[idx*3+2];
+  }
+  accGeo.setAttribute('position', new THREE.BufferAttribute(accPos,3));
+  const accMat = new THREE.PointsMaterial({ color:0xff5333, size:0.11, sizeAttenuation:true, transparent:true, opacity:0.6, depthWrite:false });
+  const acc = new THREE.Points(accGeo, accMat);
+  cloud.add(acc);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+  // calm backdrop: no parallax, no camera motion — just a slow constant spin
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SPIN = reduceMotion ? 0 : 0.0006;
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if(canvas.width!==w || canvas.height!==h){ renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+  }
+
+  camera.lookAt(0,0,0);
+
+  function animate(){
+    requestAnimationFrame(animate);
+    resize();
+    cloud.rotation.y += SPIN;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+/* ───────── scroll reveals ───────── */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+},{ threshold:0.12 });
+document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
+
+/* hero eyebrow + name entrance */
+window.addEventListener('load', ()=>{
+  const eb = document.getElementById('hero-eyebrow');
+  if(eb){ eb.style.transition='opacity 1s ease .3s'; eb.style.opacity='1'; }
+});
+
+/* ───────── photo masonry ───────── */
+(function(){
+  const grid = document.querySelector('.photo-grid');
+  if(!grid) return;
+  const rowH = 8, gap = 14;
+  function setSpan(cell){
+    const img = cell.querySelector('img');
+    if(!img || !img.naturalWidth) return;
+    const h = cell.clientWidth * (img.naturalHeight / img.naturalWidth);
+    cell.style.gridRowEnd = 'span ' + Math.max(1, Math.ceil((h + gap) / (rowH + gap)));
+  }
+  function layout(){ grid.querySelectorAll('.cell').forEach(setSpan); }
+  grid.querySelectorAll('.cell img').forEach(img=>{
+    if(img.complete && img.naturalWidth){ setSpan(img.closest('.cell')); }
+    else{ img.addEventListener('load', ()=>setSpan(img.closest('.cell'))); }
+  });
+  window.addEventListener('load', layout);
+  window.addEventListener('resize', layout);
+})();
+</script>
+</body>
+</html>
