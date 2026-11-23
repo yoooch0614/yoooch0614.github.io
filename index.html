@@ -423,7 +423,7 @@ const SHAPES = [
 ];
 const COLORS = ['#111111', '#d6f77f', '#cccccc', '#ffffff'];
 const BGS = ['#cccccc', '#ffffff', '#ffffff', '#111111'];
-const cells = [];
+let cells = [];
 
 function paint(c, first){
   const [r, clip] = pick(SHAPES);
@@ -445,32 +445,48 @@ function fillComp(comp){
   }
 }
 
-/* hero cards (list rendered twice for a seamless loop) */
+/* hero cards */
 const track = document.getElementById('track');
-const TEXTS = ['技術で、寄り添いたい。', 'ロボティクス×ＵＩ／ＵＸ', '人の課題を、技術で解く。'];
+const TEXTS = ['技術で、寄り添いたい。', 'ロボティクス×ＵＩ／ＵＸ', '人の課題を、技術で解く。', '遊び心を、小さじ一杯。'];
 const cards = [];
-for (let i = 0; i < 6; i++){
+for (let i = 0; i < 8; i++){
   const card = document.createElement('div'); card.className = 'card';
   const comp = document.createElement('div'); comp.className = 'comp';
   card.appendChild(comp);
-  card.insertAdjacentHTML('beforeend', `<div class="vt">${TEXTS[i % 3]}</div><div class="wm">tatsuta</div>`);
+  card.insertAdjacentHTML('beforeend', `<div class="vt">${TEXTS[i % TEXTS.length]}</div><div class="wm">tatsuta</div>`);
   fillComp(comp); cards.push(card); track.appendChild(card);
 }
-// the clones share no cells, so they morph independently — that is fine visually
-cards.forEach(card => {
-  const clone = card.cloneNode(true); track.appendChild(clone);
-  adoptCells(clone);
-});
 document.querySelectorAll('[data-comp]').forEach(fillComp);
-
-/* maker cards: second copy for the infinite loop, hidden from keyboard and screen readers */
 const mtrack = document.getElementById('mtrack');
-[...mtrack.children].forEach(mk => {
-  const clone = mk.cloneNode(true);
-  clone.inert = true; clone.setAttribute('aria-hidden', 'true');
-  mtrack.appendChild(clone);
-  adoptCells(clone);
-});
+
+/* Infinite loop: the track slides by -50%, so it must hold 2n copies of the set,
+   with n sets at least as wide as the visible box — otherwise wide screens show a gap.
+   Copies are inert + aria-hidden so links and text aren't duplicated for keyboard/AT. */
+function loopTrack(t, pxPerSec){
+  const originals = [...t.children];
+  const build = () => {
+    t.querySelectorAll('[data-clone]').forEach(el => el.remove());
+    cells = cells.filter(c => c.el.isConnected);
+    const setW = t.scrollWidth;
+    const n = Math.max(1, Math.ceil(t.parentElement.clientWidth / setW));
+    for (let i = 1; i < n * 2; i++){
+      originals.forEach(o => {
+        const c = o.cloneNode(true);
+        c.dataset.clone = ''; c.inert = true; c.setAttribute('aria-hidden', 'true');
+        t.appendChild(c); adoptCells(c);
+      });
+    }
+    t.style.animationDuration = (n * setW / pxPerSec) + 's'; // same speed at any width
+  };
+  build();
+  let lastW = innerWidth, timer;
+  addEventListener('resize', () => {
+    if (innerWidth === lastW) return; // ignore mobile URL-bar height changes
+    lastW = innerWidth; clearTimeout(timer); timer = setTimeout(build, 200);
+  });
+}
+loopTrack(track, 28);
+loopTrack(mtrack, 21);
 
 // cloned cells get their own colours so copies don't move in lockstep
 function adoptCells(root){
