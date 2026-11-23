@@ -9,7 +9,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=Karla:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
 
 <style>
   :root{
@@ -35,7 +35,7 @@
     flex:0 0 240px; align-self:flex-start; position:sticky; top:0; height:100vh;
     padding:32px 32px 40px; display:flex; flex-direction:column; gap:56px; z-index:50;
   }
-  .logo{ font-family:Karla,sans-serif; font-size:30px; line-height:1; display:inline-flex; flex-direction:column; gap:6px; }
+  .logo{ font-family:Syne,sans-serif; font-weight:700; font-size:34px; letter-spacing:-.04em; line-height:.9; display:inline-flex; flex-direction:column; gap:6px; }
   .logo i{ display:block; width:44px; height:4px; background:var(--lime); }
   .nav{ display:flex; flex-direction:column; gap:6px; font-family:Karla,sans-serif; font-weight:700; font-size:15px; letter-spacing:.02em; }
   .nav a{ display:flex; align-items:center; gap:10px; padding:4px 0; }
@@ -68,7 +68,7 @@
   .card{ width:300px; height:430px; margin-right:24px; background:#fff; position:relative; flex:none; }
   .card .comp{ position:absolute; left:24px; top:96px; width:200px; height:200px; }
   .vt{ position:absolute; right:22px; top:24px; writing-mode:vertical-rl; font-weight:700; font-size:21px; letter-spacing:.12em; line-height:1.5; z-index:1; }
-  .wm{ position:absolute; left:0; right:0; bottom:26px; text-align:center; font-family:Karla,sans-serif; font-size:17px; }
+  .wm{ position:absolute; left:0; right:0; bottom:22px; text-align:center; font-family:Syne,sans-serif; font-weight:700; font-size:18px; letter-spacing:-.03em; }
   .intro{ display:grid; grid-template-columns:minmax(0,3fr) minmax(0,9fr); gap:48px; margin-top:56px; align-items:end; }
   .name{ font-weight:700; font-size:64px; line-height:1.1; letter-spacing:.04em; }
   .name small{ display:block; font-family:Karla,sans-serif; font-weight:400; font-size:16px; letter-spacing:.2em; margin-top:14px; text-transform:uppercase; }
@@ -126,8 +126,10 @@
   .note{ font-size:13px; margin-top:12px; color:var(--sub); }
   .maker{ margin-top:96px; }
   .carousel{ overflow:hidden; }
-  .mtrack{ display:flex; gap:20px; transition:transform .8s cubic-bezier(.7,0,.2,1); }
-  .mk{ flex:0 0 300px; background:#fff; display:flex; flex-direction:column; }
+  /* cards rendered twice by script; margin (not gap) keeps the -50% loop seamless */
+  .mtrack{ display:flex; width:max-content; animation:slide 60s linear infinite; }
+  .carousel:hover .mtrack,.mtrack.paused{ animation-play-state:paused; }
+  .mk{ flex:0 0 300px; margin-right:20px; background:#fff; display:flex; flex-direction:column; }
   .mk .media{ aspect-ratio:4/3; }
   .mk .mb{ padding:18px 20px 20px; display:flex; flex-direction:column; flex:1; }
   .mk h4{ margin:6px 0 8px; font-size:16px; line-height:1.5; }
@@ -189,7 +191,8 @@
   }
   @media (prefers-reduced-motion:reduce){
     html{ scroll-behavior:auto; }
-    .track,.ticker div,.glyph,.cue i{ animation:none; }
+    .track,.mtrack,.ticker div,.glyph,.cue i{ animation:none; }
+    .carousel{ overflow-x:auto; }
     .state line{ stroke-dashoffset:0; transition:none; }
     [data-reveal]{ opacity:1; transform:none; transition:none; }
   }
@@ -199,7 +202,7 @@
 <div class="pf">
 
 <aside class="side">
-  <a class="logo" href="#top">Y.Tatsuta<i></i></a>
+  <a class="logo" href="#top">tatsuta<i></i></a>
   <nav class="nav" aria-label="セクション">
     <a href="#about"><span></span>ABOUT</a>
     <a href="#works"><span></span>WORKS</a>
@@ -373,9 +376,7 @@
       </div>
       <div class="ctrl">
         <div class="pill">
-          <button type="button" id="prev" aria-label="前へ"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
-          <button type="button" id="pause" class="ps" aria-label="自動送りを一時停止"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg></button>
-          <button type="button" id="next" aria-label="次へ"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+          <button type="button" id="pause" aria-label="スクロールを一時停止"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg></button>
         </div>
         <span class="lbl">More to come...</span>
       </div>
@@ -452,18 +453,32 @@ for (let i = 0; i < 6; i++){
   const card = document.createElement('div'); card.className = 'card';
   const comp = document.createElement('div'); comp.className = 'comp';
   card.appendChild(comp);
-  card.insertAdjacentHTML('beforeend', `<div class="vt">${TEXTS[i % 3]}</div><div class="wm">Y.Tatsuta</div>`);
+  card.insertAdjacentHTML('beforeend', `<div class="vt">${TEXTS[i % 3]}</div><div class="wm">tatsuta</div>`);
   fillComp(comp); cards.push(card); track.appendChild(card);
 }
 // the clones share no cells, so they morph independently — that is fine visually
 cards.forEach(card => {
   const clone = card.cloneNode(true); track.appendChild(clone);
-  clone.querySelectorAll('.cell').forEach(el => {
+  adoptCells(clone);
+});
+document.querySelectorAll('[data-comp]').forEach(fillComp);
+
+/* maker cards: second copy for the infinite loop, hidden from keyboard and screen readers */
+const mtrack = document.getElementById('mtrack');
+[...mtrack.children].forEach(mk => {
+  const clone = mk.cloneNode(true);
+  clone.inert = true; clone.setAttribute('aria-hidden', 'true');
+  mtrack.appendChild(clone);
+  adoptCells(clone);
+});
+
+// cloned cells get their own colours so copies don't move in lockstep
+function adoptCells(root){
+  root.querySelectorAll('.cell').forEach(el => {
     const c = { el, shape: el.firstChild, rot: 0 };
     setBg(c, pick(BGS)); paint(c, true); cells.push(c);
   });
-});
-document.querySelectorAll('[data-comp]').forEach(fillComp);
+}
 
 if (!reduceMotion){
   setInterval(() => {
@@ -477,26 +492,15 @@ if (!reduceMotion){
 
 /* ───────── maker carousel ───────── */
 (function(){
-  const mtrack = document.getElementById('mtrack');
   const pauseBtn = document.getElementById('pause');
-  const n = mtrack.children.length;
-  let i = 0, paused = reduceMotion;
-  const go = k => {
-    i = (k + n) % n;
-    const step = mtrack.children[0].offsetWidth + 20;
-    mtrack.style.transform = `translateX(${-step * i}px)`;
+  let paused = false;
+  pauseBtn.onclick = () => {
+    paused = !paused;
+    mtrack.classList.toggle('paused', paused);
+    pauseBtn.setAttribute('aria-label', paused ? 'スクロールを再開' : 'スクロールを一時停止');
+    pauseBtn.querySelector('path').setAttribute('d', paused ? 'M8 5v14l11-7z' : 'M7 5h3v14H7zM14 5h3v14h-3z');
   };
-  document.getElementById('prev').onclick = () => go(i - 1);
-  document.getElementById('next').onclick = () => go(i + 1);
-  const setPause = p => {
-    paused = p;
-    pauseBtn.setAttribute('aria-label', p ? '自動送りを再開' : '自動送りを一時停止');
-    pauseBtn.querySelector('path').setAttribute('d', p ? 'M8 5v14l11-7z' : 'M7 5h3v14H7zM14 5h3v14h-3z');
-  };
-  pauseBtn.onclick = () => setPause(!paused);
-  setPause(paused);
-  setInterval(() => { if (!paused) go(i + 1); }, 4000);
-  addEventListener('resize', () => go(i));
+  if (reduceMotion) pauseBtn.hidden = true;
 })();
 
 /* ───────── crosshair cursor (mouse only) ───────── */
